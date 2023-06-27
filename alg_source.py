@@ -1,5 +1,5 @@
 import json
-
+from decimal import Decimal
 def get_probs(string):
     #print(string)
     string=str(string)
@@ -143,12 +143,24 @@ def long_compression(string):
 
     dataset=separator(string)
     compressed={}
-    hashed={}
+    pure_data=""
+    pure_prob=""
     for i in dataset:
         compressed[i]=compression(dataset[i])
-        hashed[i]=compressed[i]['c']
-    save(compressed, "test")  
-    save(hashed, "pure_test")
+        pure_data+=str(compressed[i]['c'])+","
+        #Decimal("0.2").as_integer_ratio()
+        pure_prob+=str(compressed[i]["p"])+"\n"
+        pure_prob=pure_prob.replace("\"", "")
+        pure_prob=pure_prob.replace("{", "")
+        pure_prob=pure_prob.replace("}", "")
+        pure_prob=pure_prob.replace("'", "")
+        pure_prob=pure_prob.replace(":", "")
+        pure_prob=pure_prob.replace(" ", "")
+        pure_prob=pure_prob.replace("0.", "")
+        pure_prob=pure_prob.replace(",", "")
+    save(compressed, "full_info")  
+    save(pure_data, "pure_data")
+    save(pure_prob, "pure_prob")
 
 def long_decompression(name):
     archive = load(f"{name}")
@@ -162,7 +174,7 @@ if __name__=="__main__":#13 уникальных символов
     test = "hello world and everyone who wathes"
  
     long_compression(test)
-    print(long_decompression("test.json"))
+    print(long_decompression("full_info.json"))
     
   
    
