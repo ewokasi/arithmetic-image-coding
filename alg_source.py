@@ -100,13 +100,13 @@ def location_to_alpha(location, data):
             return list(location)[i]
         
             
-def separator(string):
+def separator(string, count=14):
     dataset = {}
     sector=""
     iter=0
     for i in range(len(string)):
         sector+=str(string[i])
-        if i%13==0 and i!=0:
+        if i%count==0 and i!=0:
             dataset[iter]=sector
             iter+=1
             sector=""
@@ -138,8 +138,29 @@ def decompression(archive):
         
     return decompressed
     
+def unperiod(numb):
+    num=numb
+    num=str(num)
+    num=num.replace("0.","")
+    counter=0
+    for i in range(len(num)-1):
+        if num[i+1]==num[i]:
+            counter+=1
+            if counter>=10:
+                return f"`{num[i]}"
+        else:
+            counter=0
+    drob =1/numb
+    return str(drob).replace(".0","")
 
+def make_pure_prob(compressed):
+        pure_prob=""
+        for i in compressed['p']:      
+            pure_prob+=i+unperiod(compressed['p'][i])
+        return pure_prob   
+            
 def long_compression(string):
+       
 
     dataset=separator(string)
     compressed={}
@@ -148,16 +169,8 @@ def long_compression(string):
     for i in dataset:
         compressed[i]=compression(dataset[i])
         pure_data+=str(compressed[i]['c'])+","
-        #Decimal("0.2").as_integer_ratio()
-        pure_prob+=str(compressed[i]["p"])+"\n"
-        pure_prob=pure_prob.replace("\"", "")
-        pure_prob=pure_prob.replace("{", "")
-        pure_prob=pure_prob.replace("}", "")
-        pure_prob=pure_prob.replace("'", "")
-        pure_prob=pure_prob.replace(":", "")
-        pure_prob=pure_prob.replace(" ", "")
-        pure_prob=pure_prob.replace("0.", "")
-        pure_prob=pure_prob.replace(",", "")
+        pure_prob+=make_pure_prob(compressed[i])
+        
     save(compressed, "full_info")  
     save(pure_data, "pure_data")
     save(pure_prob, "pure_prob")
@@ -170,7 +183,7 @@ def long_decompression(name):
         res+=decompression(archive[f'{i}'])
     return res
 
-if __name__=="__main__":#13 уникальных символов
+if __name__=="__main__":#13 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
     test = "hello world and everyone who wathes"
  
     long_compression(test)
