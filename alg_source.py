@@ -143,13 +143,15 @@ def unperiod(numb):
     num=str(num)
     num=num.replace("0.","")
     counter=0
+    not_per=""
     for i in range(len(num)-1):
         if num[i+1]==num[i]:
             counter+=1
             if counter>=10:
-                return f"`{num[i]}"
+                return f"{not_per}`{num[i]}"
         else:
             counter=0
+            not_per = num[i]
     drob =1/numb
     return str(drob).replace(".0","")
 
@@ -157,7 +159,62 @@ def make_pure_prob(compressed):
         pure_prob=""
         for i in compressed['p']:      
             pure_prob+=i+unperiod(compressed['p'][i])
-        return pure_prob   
+        return pure_prob
+
+def uncode_pure(path1, path2):
+    pure_data= load(path1)
+    compressed=[]
+    pure_data = pure_data.split(sep=",")
+    for data in pure_data:
+        if data!="":
+            compressed.append(data)
+    pure_prob = load(path2)
+    
+    
+    full_data={}
+    stops = pure_prob.count("!")
+    i=0
+    for q in range(stops):
+        value=""
+        simb=""
+        probs={"p":""}
+        prob={}
+        stop=0
+        while stop!=1:
+            
+            simb=pure_prob[i]
+            
+            if simb.isalpha() or simb==" " or simb=="!":
+                if value!="":
+                    prob[key]=adapt_from_pure(value) 
+                    value=""
+                    if key=="!" :
+                        stop=1
+                key = simb
+             
+            else:
+                value+= simb  
+                  
+            if i==len(pure_prob)-1:
+                stop=1
+                prob[key]=adapt_from_pure(value)     
+            i+=1
+            
+        print(prob)
+        probs["p"]=prob
+        probs["c"]=compressed[q]
+        full_data[str(q)]=probs  
+            
+    print(full_data)
+    
+
+def adapt_from_pure(value):
+    if value.count("`")==0:
+        return 1/float(value)
+    elif len(value)==2:
+        return float("0.0"+value[1]*16+str(int(int(value[1])/5+int(value[1]))))
+    else:
+        return float("0."+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
             
 def long_compression(string):
        
@@ -188,6 +245,7 @@ if __name__=="__main__":#13 уникальных символов a`3 -веро�
  
     long_compression(test)
     print(long_decompression("full_info.json"))
+    uncode_pure("pure_data.json", "pure_prob.json")
     
   
    
