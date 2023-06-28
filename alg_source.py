@@ -95,12 +95,12 @@ def location_to_alpha(location, data):
         right = list(location.values())[i][1]
         #print("iteration ",i, "left", left, "right", right, "data", data, "delta",right-left) 
         
-        if left<=data and right >=data:
-    
+        if left<data and right >data:
+            
             return list(location)[i]
         
             
-def separator(string, count=14):
+def separator(string, count=13):
     dataset = {}
     sector=""
     iter=0
@@ -184,7 +184,7 @@ def uncode_pure(path1, path2):
             
             simb=pure_prob[i]
             
-            if simb.isalpha() or simb==" " or simb=="!":
+            if simb.isalpha() or simb in"! ,/:;":
                 if value!="":
                     prob[key]=adapt_from_pure(value) 
                     value=""
@@ -204,17 +204,21 @@ def uncode_pure(path1, path2):
         probs["p"]=prob
         probs["c"]=compressed[q]
         full_data[str(q)]=probs  
-            
-    print(full_data)
+    save(full_data, "recovered_from_pure")        
+    return full_data
     
 
 def adapt_from_pure(value):
     if value.count("`")==0:
         return 1/float(value)
     elif len(value)==2:
+        if value[1]=="1" or value[1]=="2":
+            return float("0."+value[1]*16+str(int(int(int(value[1])/5)+int(value[1]))))
         return float("0.0"+value[1]*16+str(int(int(value[1])/5+int(value[1]))))
     else:
-        return float("0."+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
+        if value[0]=="1" or value[0]=="2"or value[0]=="0":
+            return float("0."+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
+        return float("0.0"+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
             
 def long_compression(string):
        
@@ -241,11 +245,11 @@ def long_decompression(name):
     return res
 
 if __name__=="__main__":#13 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
-    test = "hello world and everyone who wathes"
- 
+    test = "today we wanskdnmfhwejsadfasdfasdfzxcvkavdfggfvjhgfreatretertbvnvbnvbzxcvs ghcfnm cvbv chxfgxh    gcjghrjhgfdgsdferxcvsh"
     long_compression(test)
-    print(long_decompression("full_info.json"))
     uncode_pure("pure_data.json", "pure_prob.json")
+    print(long_decompression("full_info.json"))
+    print(long_decompression("recovered_from_pure.json"))
     
   
    
