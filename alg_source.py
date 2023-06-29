@@ -20,6 +20,7 @@ def get_location(probs, entering = 0, finish =1):
     location= {}
     previous = entering
     mults = finish-entering
+    #print(probs)
     for alpha in probs:
         
         left = previous
@@ -51,6 +52,8 @@ def select(start, end):
 
 
 def compression(string):
+    if string=="":
+        return
     probs= get_probs(string)
     string+="!"
     #probs ={"a":0.6, "b":0.2,"c":0.1, "!":0.1}
@@ -100,24 +103,25 @@ def location_to_alpha(location, data):
             return list(location)[i]
         
             
-def separator(string, count=13):
+def separator(string, count=14):#адаптивно менять count
     dataset = {}
     sector=""
     iter=0
+    
     for i in range(len(string)):
         sector+=str(string[i])
         if i%count==0 and i!=0:
             dataset[iter]=sector
             iter+=1
             sector=""
-        if i == len(string)-1:
-            dataset[iter]=sector
+        if i == len(string)-1:#ксли много не хватает - дополнять
+            dataset[iter]=sector#+"1"*int((count-len(sector)-2)/1)
             sector=""
     return dataset        
 
     
 def decompression(archive):
-   
+    
     probs = archive["p"]
     data = o_format(archive["c"])
    
@@ -200,7 +204,7 @@ def uncode_pure(path1, path2):
                 prob[key]=adapt_from_pure(value)     
             i+=1
             
-        print(prob)
+        #print(prob)
         probs["p"]=prob
         probs["c"]=compressed[q]
         full_data[str(q)]=probs  
@@ -212,11 +216,11 @@ def adapt_from_pure(value):
     if value.count("`")==0:
         return 1/float(value)
     elif len(value)==2:
-        if value[1]=="1" or value[1]=="2":
+        if value[1]!="6":
             return float("0."+value[1]*16+str(int(int(int(value[1])/5)+int(value[1]))))
         return float("0.0"+value[1]*16+str(int(int(value[1])/5+int(value[1]))))
     else:
-        if value[0]=="1" or value[0]=="2"or value[0]=="0":
+        if value[0]!="6":
             return float("0."+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
         return float("0.0"+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
             
@@ -229,6 +233,9 @@ def long_compression(string):
     pure_prob=""
     for i in dataset:
         compressed[i]=compression(dataset[i])
+        #print(compressed[i])
+        if compressed[i]==None:
+            break
         pure_data+=str(compressed[i]['c'])+","
         pure_prob+=make_pure_prob(compressed[i])
         
@@ -241,11 +248,13 @@ def long_decompression(name):
     
     res=""
     for i in range(len(archive)):
+        if archive[f'{i}']==None:
+            break
         res+=decompression(archive[f'{i}'])
     return res
 
-if __name__=="__main__":#13 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
-    test = "today we wanskdnmfhwejsadfasdfasdfzxcvkavdfggfvjhgfreatretertbvnvbnvbzxcvs ghcfnm cvbv chxfgxh    gcjghrjhgfdgsdferxcvsh"
+if __name__=="__main__":#15 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
+    test = "full ,adaptation of text fdkslajkdlmgnekrljelnkdfjngasdfasdfewrwedfgvjekhrg"
     long_compression(test)
     uncode_pure("pure_data.json", "pure_prob.json")
     print(long_decompression("full_info.json"))
