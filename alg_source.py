@@ -200,7 +200,7 @@ def uncode_pure(path1, path2):
             simb=pure_prob[i]
             #print("now letter is ", simb)
             
-            if simb.isalpha() or simb in"! ',/+.=:;%":
+            if simb.isalpha() or simb in"! ',/+=:;%":
                 if simb=="%":
                     simb=pure_prob[i+1]
                     i+=1

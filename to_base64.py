@@ -14,8 +14,5 @@ if  __name__=="__main__":
     full = alg_source.long_decompression("full_info.json")
     alg_source.uncode_pure("pure_data.json", "pure_prob.json")
     res = alg_source.long_decompression("recovered_from_pure.json")
-    print (test,"\n\n",res)
-    png_recovered =base64.b64decode(test)
-    f = open("temp.png", "w")
-    f.write(png_recovered)
-    f.close()
+    print (test==res)
+    
