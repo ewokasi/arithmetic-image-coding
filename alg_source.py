@@ -89,21 +89,23 @@ def o_format(data):
 
 
 def location_to_alpha(location, data):
+  
     length = len(location)
+    #print(data)
     #print("location", list(location.values()))
     
     for i in range(length):
-     
+        
         left  = list(location.values())[i][0]
         right = list(location.values())[i][1]
         #print("iteration ",i, "left", left, "right", right, "data", data, "delta",right-left) 
         
         if left<data and right >data:
-            
+            #print("______returned list(location)[i]_____ ",list(location)[i])
             return list(location)[i]
         
             
-def separator(string, count=14):#адаптивно менять count
+def separator(string, count=8):#адаптивно менять count
     dataset = {}
     sector=""
     iter=0
@@ -121,9 +123,11 @@ def separator(string, count=14):#адаптивно менять count
 
     
 def decompression(archive):
-    
+    #print("archive ",archive)
     probs = archive["p"]
     data = o_format(archive["c"])
+    #print("probs ",probs)
+   
    
     left = 0
     right = 1
@@ -132,13 +136,17 @@ def decompression(archive):
     alpha = ""
     while alpha!="!":
         location = get_location(probs, left, right)
-        
+       
         alpha = location_to_alpha(location, data)
-        if alpha=="!":
+        #print("alpha ",  alpha)
+        if alpha==None:
             break
+        if alpha=="!":
+             break
         decompressed+= alpha
-        left = location[alpha][0]
-        right = location[alpha][1]
+        left = location[str(alpha)][0]
+        right = location[str(alpha)][1]
+        #print(left, right)
         
     return decompressed
     
@@ -161,8 +169,11 @@ def unperiod(numb):
 
 def make_pure_prob(compressed):
         pure_prob=""
-        for i in compressed['p']:      
-            pure_prob+=i+unperiod(compressed['p'][i])
+        for i in compressed['p']: 
+            if str(i).isdigit():
+                pure_prob+="%"+i+unperiod(compressed['p'][i])
+            else:     
+                pure_prob+=i+unperiod(compressed['p'][i])
         return pure_prob
 
 def uncode_pure(path1, path2):
@@ -187,17 +198,24 @@ def uncode_pure(path1, path2):
         while stop!=1:
             
             simb=pure_prob[i]
+            #print("now letter is ", simb)
             
-            if simb.isalpha() or simb in"! ,/:;":
+            if simb.isalpha() or simb in"! ',/+.=:;%":
+                if simb=="%":
+                    simb=pure_prob[i+1]
+                    i+=1
+                    #print("found a digit ", simb)
                 if value!="":
                     prob[key]=adapt_from_pure(value) 
                     value=""
+                    #print("current value is ", value)
                     if key=="!" :
                         stop=1
                 key = simb
              
             else:
-                value+= simb  
+                value+= simb
+                #print("value has been plused", value)  
                   
             if i==len(pure_prob)-1:
                 stop=1
@@ -253,12 +271,23 @@ def long_decompression(name):
         res+=decompression(archive[f'{i}'])
     return res
 
+
+def lil_validator(str1, str2, str3):
+    if  str1==str2 and str2 ==str3:
+        print("correct")
+    elif str2==str3: 
+        print("compression with error")
+    elif str1==str2:
+        print("decompression from pure failked")
+    elif str1==str3:
+        print("full info decomp failed")
+
 if __name__=="__main__":#15 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
-    test = "full ,adaptation of text fdkslajkdlmgnekrljelnkdfjngasdfasdfewrwedfgvjekhrg"
+    test = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4="
     long_compression(test)
     uncode_pure("pure_data.json", "pure_prob.json")
     print(long_decompression("full_info.json"))
     print(long_decompression("recovered_from_pure.json"))
-    
+    lil_validator(test,long_decompression("full_info.json"),long_decompression("recovered_from_pure.json"))
   
    
