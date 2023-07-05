@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+import to_base64
 def get_probs(string):
     #print(string)
     string=str(string)
@@ -112,13 +113,17 @@ def separator(string, count=8):#адаптивно менять count
     
     for i in range(len(string)):
         sector+=str(string[i])
-        if i%count==0 and i!=0:
+        if len(sector)==count:
             dataset[iter]=sector
             iter+=1
             sector=""
-        if i == len(string)-1:#ксли много не хватает - дополнять
-            dataset[iter]=sector#+"1"*int((count-len(sector)-2)/1)
+        if i == len(string)-1:
+            dataset[iter]=sector+"!"*int(count-len(sector))
             sector=""
+    #print("1111", dataset[2])
+    #GgoAAAANS
+    #b'iVBORw0K
+    #UhEUgAAAe
     return dataset        
 
     
@@ -147,6 +152,8 @@ def decompression(archive):
         left = location[str(alpha)][0]
         right = location[str(alpha)][1]
         #print(left, right)
+    # if len(decompressed)==8:
+    #     print(8)
         
     return decompressed
     
@@ -275,19 +282,30 @@ def long_decompression(name):
 def lil_validator(str1, str2, str3):
     if  str1==str2 and str2 ==str3:
         print("correct")
-    elif str2==str3: 
-        print("compression with error")
+    
     elif str1==str2:
         print("decompression from pure failked")
     elif str1==str3:
         print("full info decomp failed")
+    elif str2==str3: 
+        print("compression with error")
 
 if __name__=="__main__":#15 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
-    test = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4="
-    long_compression(test)
-    uncode_pure("pure_data.json", "pure_prob.json")
-    print(long_decompression("full_info.json"))
-    print(long_decompression("recovered_from_pure.json"))
-    lil_validator(test,long_decompression("full_info.json"),long_decompression("recovered_from_pure.json"))
-  
+    test_bytes = to_base64.to_64("test.png")
+    test = str(test_bytes)
+    
+    #print(test)
+    #long_compression(test)
+    #uncode_pure("pure_data.json", "pure_prob.json")
+    res_full = long_decompression("full_info.json")
+    res = long_decompression("recovered_from_pure.json")
+    #print(res_full)
+    #print(res)
+    lil_validator(test,res_full,res)
+    save(res, "recov.json")
+    save(test, "tested.json")
+    for i in range(len(test)):
+        if res[i]!=test[i]:
+            print("error on",i )
+            break
    
