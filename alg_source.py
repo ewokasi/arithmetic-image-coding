@@ -106,7 +106,7 @@ def location_to_alpha(location, data):
             return list(location)[i]
         
             
-def separator(string, count=8):#адаптивно менять count
+def separator(string, count=7):#адаптивно менять count
     dataset = {}
     sector=""
     iter=0
@@ -293,10 +293,10 @@ def lil_validator(str1, str2, str3):
 if __name__=="__main__":#15 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
     test_bytes = to_base64.to_64("test.png")
     test = str(test_bytes)
-    
-    #print(test)
-    #long_compression(test)
-    #uncode_pure("pure_data.json", "pure_prob.json")
+    #на 8 не дещифрует. на 9 теряет символ
+    print(test)
+    long_compression(test)
+    uncode_pure("pure_data.json", "pure_prob.json")
     res_full = long_decompression("full_info.json")
     res = long_decompression("recovered_from_pure.json")
     #print(res_full)
@@ -304,8 +304,10 @@ if __name__=="__main__":#15 уникальных символов a`3 -веро�
     lil_validator(test,res_full,res)
     save(res, "recov.json")
     save(test, "tested.json")
-    for i in range(len(test)):
-        if res[i]!=test[i]:
-            print("error on",i )
-            break
+    
+    # res = load("recov.json.json")
+    # for i in range(len(test)):
+    #     if res[i]!=test[i]:
+    #         print("error on",i )
+    #         break
    
