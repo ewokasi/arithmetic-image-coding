@@ -37,16 +37,30 @@ def select(start, end):
     #print(start, end)
     start = str(start)
     end = str(end)
+    start_z=0
+    if(len(start)!=20):
+        start_z = 20-len(start)
+        start+="0"*(start_z)
+    end_z=0    
+    if(len(end)!=20):
+        end_z = 20-len(end)
+        end+="0"*(end_z)
+    limiter = len(start)-min(end_z, start_z)
     res = ""
-    for i in range(2,len(start)):
 
+    for i in range(2, limiter):
+        #print(i, start)
+        s = start[i]
+        
         if start[i]==end[i]:
-            res+=start[i]
+            res+=end[i]
+        elif int(end[i])-int(start[i])>1:
+            res+=str(int(s)+1)
+            break
         else:
-            #print("sss",start[i])
-            if int(end[i])-int (start[i])>=1:
-                res+=str(int(start[i])+1)
-                break
+            s = start[i]
+            res+=s
+               
     #print(res)
     #print(start, end)
     return res
@@ -55,25 +69,28 @@ def select(start, end):
 def compression(string):
     if string=="":
         return
+    #print(string, len(string))
     probs= get_probs(string)
+    #print(probs, len(probs))
     string+="!"
     #probs ={"a":0.6, "b":0.2,"c":0.1, "!":0.1}
     location = get_location(probs)
     left = 0
     right = 1
-
+    iters= 0 
     for alpha in string:
-        #print("iteration", alpha)
+       
         left = location[alpha][0]
         right = location[alpha][1]
         location = get_location(probs, left, right)
         #print("calcs" ,location)
-      
+        iters+=1
     compressed = select(left, right)
     #print("select" ,compressed)
     archive ={}
     archive['p']=probs
     archive['c']=compressed
+    #print(archive, left, right, iters)
     return archive
 
 def save(archive, name):
@@ -106,7 +123,7 @@ def location_to_alpha(location, data):
             return list(location)[i]
         
             
-def separator(string, count=7):#адаптивно менять count
+def separator(string, count=9):#адаптивно менять count
     dataset = {}
     sector=""
     iter=0
@@ -256,9 +273,11 @@ def long_compression(string):
     compressed={}
     pure_data=""
     pure_prob=""
+   
     for i in dataset:
+        #print(dataset[i], len(dataset[i]))
         compressed[i]=compression(dataset[i])
-        #print(compressed[i])
+        #print(compressed[i], len(compressed[i]['p']))
         if compressed[i]==None:
             break
         pure_data+=str(compressed[i]['c'])+","
@@ -291,6 +310,8 @@ def lil_validator(str1, str2, str3):
         print("compression with error")
 
 if __name__=="__main__":#15 уникальных символов a`3 -вероятность a 0.33333 f3 - 1/3
+
+    q = select(0.0125827156,0.012582716)
     test_bytes = to_base64.to_64("test.png")
     test = str(test_bytes)
     #на 8 не дещифрует. на 9 теряет символ

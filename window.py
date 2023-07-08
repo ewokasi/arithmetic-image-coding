@@ -30,6 +30,8 @@ pack_button = customtkinter.CTkButton(master=app, text="Архивировать
 unpack_button = customtkinter.CTkButton(master=app, text="Распаковать", command=decompression)
 pack_button.place(relx=0.5, rely=0.2, anchor=customtkinter.CENTER)
 unpack_button.place(relx=0.5, rely=0.5, anchor=customtkinter.CENTER)
+horizontalScale = customtkinter.CTkScale( length=200, from_=1.0, to=100.0, value=30)
+horizontalScale.pack()
 
 
 if __name__=="__main__":
