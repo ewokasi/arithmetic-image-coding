@@ -34,22 +34,22 @@ def get_location(probs, entering = 0, finish =1):
 
 
 def select(start, end):
-    #print(start, end)
+    print(start, end)
     start = str(start)
     end = str(end)
     start_z=0
-    if(len(start)!=20):
-        start_z = 20-len(start)
+    if(len(start)!=21):
+        start_z = 21-len(start)
         start+="0"*(start_z)
     end_z=0    
-    if(len(end)!=20):
-        end_z = 20-len(end)
+    if(len(end)!=21):
+        end_z = 21-len(end)
         end+="0"*(end_z)
     limiter = len(start)-min(end_z, start_z)
     res = ""
 
     for i in range(2, limiter):
-        #print(i, start)
+        print(i, start, end)
         s = start[i]
         
         if start[i]==end[i]:
@@ -266,10 +266,10 @@ def adapt_from_pure(value):
             return float("0."+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
         return float("0.0"+str(value[0])+value[2]*16+str(int(int(value[2])/5+int(value[2]))))
             
-def long_compression(string):
+def long_compression(string, count=9):
        
 
-    dataset=separator(string)
+    dataset=separator(string, count)
     compressed={}
     pure_data=""
     pure_prob=""
