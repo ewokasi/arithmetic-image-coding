@@ -57,7 +57,7 @@ class App(customtkinter.CTk):
         self.slider_frame.grid(row=2, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.slider_frame.grid_columnconfigure(0, weight=1)
         self.slider_frame.grid_rowconfigure(4, weight=1)
-    
+        #=================================
         self.slider = customtkinter.CTkSlider(self.slider_frame, from_=1, to=100, number_of_steps=100, command= self.slider_count)
         self.counter_label = customtkinter.CTkLabel(self.slider_frame, text="separator counter: "+ str(self.sep_counter))
         self.counter_label.grid(row=1, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -70,6 +70,12 @@ class App(customtkinter.CTk):
         self.sep_counter=int(val)
         self.counter_label.configure(text="separator counter: "+str(int(val)))
     
+    def open_explorer(self):
+        self.Work_Path = str(filedialog.askopenfilename())
+        
+        print(self.Work_Path)
+        self.entry.delete(0, END)
+        self.entry.insert(0,string =self.Work_Path)
 
     def compression(self):
         self.textbox.insert("0.0","in progress\n")
@@ -87,8 +93,8 @@ class App(customtkinter.CTk):
         self.textbox.insert("0.0", '--------------------------------\n\n')
 
     def decompression(self):
-        
-        alg_source.uncode_pure("pure_data.json", "pure_prob.json")
+        path = str(filedialog.askdirectory())
+        alg_source.uncode_pure(f"{path}//pure_data.json", f"{path}//pure_prob.json")
         res = alg_source.long_decompression("recovered_from_pure.json")
         tt = str(res).replace("b'","")
         tt = tt.replace("'","")
@@ -96,12 +102,11 @@ class App(customtkinter.CTk):
                 fh.write(to_base64.base64.b64decode(str(tt)))
                 fh.close()
         #print(res)
+        self.textbox.insert("0.0", '--------------------------------\n\n')
+        self.textbox.insert("0.0", 'decompressed\n\n')
+        self.textbox.insert("0.0", '--------------------------------\n\n')
 
-    def open_explorer(self):
-        self.Work_Path = str(filedialog.askopenfilename())
-        print(self.Work_Path)
-        self.entry.delete(0, END)
-        self.entry.insert(0,string =self.Work_Path)
+
         
 
 if __name__ == "__main__":

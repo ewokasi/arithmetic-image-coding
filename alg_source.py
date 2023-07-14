@@ -34,7 +34,9 @@ def get_location(probs, entering = 0, finish =1):
 
 
 def select(start, end):
-    print(start, end)
+    if start==end:
+        return str(start).replace('0.', '')
+    #print(start, end)
     start = str(start)
     end = str(end)
     start_z=0
@@ -46,10 +48,11 @@ def select(start, end):
         end_z = 21-len(end)
         end+="0"*(end_z)
     limiter = len(start)-min(end_z, start_z)
+  
     res = ""
-
+    #print(limiter, min(end_z, start_z))
     for i in range(2, limiter):
-        print(i, start, end)
+       # print(i, start, end)
         s = start[i]
         
         if start[i]==end[i]:
