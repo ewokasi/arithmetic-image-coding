@@ -192,6 +192,7 @@ def unperiod(numb):
             counter=0
             not_per = num[i]
     drob =1/numb
+    #print(drob)
     return str(drob).replace(".0","")
 
 def make_pure_prob(compressed):
@@ -286,7 +287,7 @@ def long_compression(string, count=9):
         pure_data+=str(compressed[i]['c'])+","
         pure_prob+=make_pure_prob(compressed[i])
         
-    save(compressed, "full_info")  
+    #save(compressed, "full_info")  
     save(pure_data, "pure_data")
     save(pure_prob, "pure_prob")
 
@@ -317,21 +318,24 @@ if __name__=="__main__":#15 уникальных символов a`3 -веро�
     q = select(0.0125827156,0.012582716)
     test_bytes = to_base64.to_64("test.png")
     test = str(test_bytes)
-    #на 8 не дещифрует. на 9 теряет символ
+    
     print(test)
     long_compression(test)
     uncode_pure("pure_data.json", "pure_prob.json")
     res_full = long_decompression("full_info.json")
     res = long_decompression("recovered_from_pure.json")
-    #print(res_full)
-    #print(res)
+    print(res_full)
+    print(res)
     lil_validator(test,res_full,res)
     save(res, "recov.json")
     save(test, "tested.json")
     
-    # res = load("recov.json.json")
-    # for i in range(len(test)):
-    #     if res[i]!=test[i]:
-    #         print("error on",i )
-    #         break
+
+    simb = {}
+    
+    res = load("pure_prob.json")
+    set_simb = set(res)
+    for i in set_simb:
+        simb[i] = res.count(i)
+    print(simb, sum(simb.values()))
    

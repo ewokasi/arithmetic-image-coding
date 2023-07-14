@@ -58,7 +58,7 @@ class App(customtkinter.CTk):
         self.slider_frame.grid_columnconfigure(0, weight=1)
         self.slider_frame.grid_rowconfigure(4, weight=1)
         #=================================
-        self.slider = customtkinter.CTkSlider(self.slider_frame, from_=1, to=100, number_of_steps=100, command= self.slider_count)
+        self.slider = customtkinter.CTkSlider(self.slider_frame, from_=1, to=13, number_of_steps=13, command= self.slider_count)
         self.counter_label = customtkinter.CTkLabel(self.slider_frame, text="separator counter: "+ str(self.sep_counter))
         self.counter_label.grid(row=1, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.slider.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
@@ -90,6 +90,7 @@ class App(customtkinter.CTk):
         self.textbox.insert("0.0", f'total data size is {stats_data.st_size}\n')
         self.textbox.insert("0.0", f'total prob size is {stats_prob.st_size}\n')
         self.textbox.insert("0.0", f'start image size is {stats_start.st_size}\n')
+        self.textbox.insert("0.0", f'data biger x{(stats_data.st_size)/stats_start.st_size} times\n')
         self.textbox.insert("0.0", '--------------------------------\n\n')
 
     def decompression(self):
