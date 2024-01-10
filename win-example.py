@@ -6,11 +6,17 @@ import alg_source
 import to_base64
 import os
 from customtkinter import filedialog
+from PIL import Image as PImage
+import os
+
+
+
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
 
 class App(customtkinter.CTk):
+   
     def __init__(self):
         super().__init__()
 
@@ -77,7 +83,11 @@ class App(customtkinter.CTk):
         self.entry.delete(0, END)
         self.entry.insert(0,string =self.Work_Path)
 
+
     def compression(self):
+        if self.Work_Path in " Empty" :
+            self.Work_Path = filedialog.askopenfilename()
+
         self.textbox.insert("0.0","in progress\n")
         to_compress=to_base64.to_64(self.Work_Path)
        
@@ -85,12 +95,23 @@ class App(customtkinter.CTk):
         stats_data = os.stat('pure_data.json')
         stats_prob = os.stat('pure_prob.json')
         stats_start = os.stat(self.Work_Path)
+
+        newdir = self.Work_Path.replace('.', '')
+        try:
+            os.mkdir(newdir)
+        except Exception:
+            print(f'{newdir} is already exist')
+        os.rename('pure_data.json', newdir + '//pure_data.json')
+        os.rename('pure_prob.json', newdir + '//pure_prob.json')
+     
+
         self.textbox.insert("0.0", f'filename {self.Work_Path}\n')
         self.textbox.insert("0.0", f"compression done with separator counter {int(self.sep_counter)}"+'\n')
         self.textbox.insert("0.0", f'total data size is {stats_data.st_size}\n')
         self.textbox.insert("0.0", f'total prob size is {stats_prob.st_size}\n')
         self.textbox.insert("0.0", f'start image size is {stats_start.st_size}\n')
         self.textbox.insert("0.0", f'data biger x{(stats_data.st_size)/stats_start.st_size} times\n')
+        self.textbox.insert("0.0", f'archived file saved {newdir}\n\n')
         self.textbox.insert("0.0", '--------------------------------\n\n')
 
     def decompression(self):
@@ -99,16 +120,19 @@ class App(customtkinter.CTk):
         res = alg_source.long_decompression("recovered_from_pure.json")
         tt = str(res).replace("b'","")
         tt = tt.replace("'","")
-        with open("recovered.png", "wb") as fh:
+        with open(f"{path}//recovered.png", "wb") as fh:
                 fh.write(to_base64.base64.b64decode(str(tt)))
                 fh.close()
         #print(res)
         self.textbox.insert("0.0", '--------------------------------\n\n')
         self.textbox.insert("0.0", 'decompressed\n\n')
         self.textbox.insert("0.0", '--------------------------------\n\n')
+        img = PImage.open(f"{path}//recovered.png")
+        img.show()
+        os.remove(f"{path}//recovered.png")
+        os.remove(f"recovered_from_pure.json")
 
 
-        
 
 if __name__ == "__main__":
     app = App()
